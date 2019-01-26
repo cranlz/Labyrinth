@@ -21,21 +21,30 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            RenderSettings.fog = !RenderSettings.fog;
+            if (RenderSettings.ambientMode == UnityEngine.Rendering.AmbientMode.Flat)
+            {
+                RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Skybox;
+            }
+            else RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+        }
         if (Input.GetKey(KeyCode.W))
         {
-            velocity += transform.forward * 0.03f;
+            velocity += transform.forward * 0.02f;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            velocity += transform.forward * -0.03f;
+            velocity += transform.forward * -0.02f;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            velocity += transform.right * -0.03f;
+            velocity += transform.right * -0.02f;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            velocity += transform.right * 0.03f;
+            velocity += transform.right * 0.02f;
         }
         //velocity += transform.up * -0.01f;
         transform.position += velocity;
@@ -46,13 +55,16 @@ public class PlayerController : MonoBehaviour
         pitch -= Input.GetAxis("Mouse Y") * 5.0f;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
         Camera.main.transform.eulerAngles = new Vector3(pitch, transform.eulerAngles.y, 0);
-        Ray ray = new Ray(transform.position, Camera.main.transform.eulerAngles);
+        Ray ray = new Ray(transform.position, Camera.main.transform.forward);
+        Debug.DrawRay(transform.position, Camera.main.transform.forward);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 100f))
+        if (Physics.Raycast(ray, out hit, 2f))
         {
             if (hit.collider != null && hit.transform.gameObject == doorPrefab)
             {
-                hit.transform.gameObject.GetComponent<Animator>().SetBool("open", true);
+                //var door = hit.transform.gameObject.transform.Find("Door");
+                hit.transform.GetComponent<Animator>().SetBool("open", true);
+                Debug.Log(hit);
             }
         }
     }
